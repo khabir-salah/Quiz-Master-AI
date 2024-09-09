@@ -8,8 +8,8 @@ namespace Domain.Enum
 {
     public enum QuestionType
     {
-        MultipleType = 1,
-        Boolean,
+        MultipleChoice = 1,
+        TrueOrFalse,
 
     }
 }

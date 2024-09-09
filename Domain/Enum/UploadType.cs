@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Domain.Enum
 {
-    public enum DocumentType
+    public enum UploadType
     {
         Text = 1,
         Image,
-        File
+        Document
     }
 }
