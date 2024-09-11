@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Application.Features.Command.Create.Assesment;
+using Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +17,11 @@ namespace Infrastructure.Extension
         {
 
         }
+
+        public static void AddMediatRs(this IServiceCollection services)
+        {
+            services.AddMediatR(mR => mR.RegisterServicesFromAssemblies(typeof(TextAssessmentHandler).Assembly));
+        }
+
     }
 }
