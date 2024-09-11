@@ -1,18 +1,14 @@
 ﻿using Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Persistent.Context
 {
-    public class QuizMasterAiDb : DbContext
+    public class QuizMasterAiDb : IdentityDbContext<ApplicationUser>
     {
         public QuizMasterAiDb( DbContextOptions<QuizMasterAiDb> option) : base(option) { }
 
-        public DbSet<User> User => Set<User>();
+        public DbSet<ApplicationUser> User => Set<ApplicationUser>();
         public DbSet<Option> Option => Set<Option>();
         public DbSet<Result> Result => Set<Result>();
         public DbSet<Question> Question => Set<Question>();
