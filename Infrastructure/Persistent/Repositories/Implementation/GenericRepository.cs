@@ -33,5 +33,10 @@ namespace Infrastructure.Persistent.Repositories.Implementation
         {
             _context.Update(item);
         }
+        public async Task<bool> isExist(Expression<Func<T, bool>> predicate)
+        {
+            var exist =  _dbSet.Any(predicate);
+            return exist == true ? true : false;
+        }
     }
 }
