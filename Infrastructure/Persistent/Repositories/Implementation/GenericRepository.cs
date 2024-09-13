@@ -6,9 +6,8 @@ using System.Linq.Expressions;
 
 namespace Infrastructure.Persistent.Repositories.Implementation
 {
-    public class GenericRepository<T>(QuizMasterAiDb _context, DbSet<T> _dbSet) : IGenericRepository<T> where T : class
+    public class GenericRepository<T>(QuizMasterAiDb _context) : IGenericRepository<T> where T : class
     {
-        private readonly DbSet<T> _dbSet;
         public async Task AddAsync(T item)
         {
             await _context.AddAsync(item);
@@ -21,12 +20,12 @@ namespace Infrastructure.Persistent.Repositories.Implementation
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _context.Set<T>().ToListAsync();
         }
 
         public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _dbSet.FirstOrDefaultAsync(predicate);
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
         public void Update(T item)
@@ -35,7 +34,7 @@ namespace Infrastructure.Persistent.Repositories.Implementation
         }
         public async Task<bool> isExist(Expression<Func<T, bool>> predicate)
         {
-            var exist =  _dbSet.Any(predicate);
+            var exist =  _context.Set<T>().Any(predicate);
             return exist == true ? true : false;
         }
     }
