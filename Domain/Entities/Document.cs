@@ -13,8 +13,8 @@ namespace Domain.Entities
         public string Title { get; set; }
         public UploadType DocumentType { get; set; }
         public string Content { get; set; }
-        public Guid UserId { get; set; }
-        public User User { get; set; }
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; }
         public ICollection<Assesment> Assesments { get; set; }
     }
 }

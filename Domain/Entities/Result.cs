@@ -11,8 +11,8 @@ namespace Domain.Entities
         public Guid Id { get; set; }
         public Guid AssesmentId { get; set; }
         public double Score { get; set; }
-        public Guid UserId { get; set; }
-        public User User { get; set; }
+        public string ApplicationUserId { get; set; }
+        public ApplicationUser User { get; set; }
         public ICollection<UserQuestionResult> QuestionResults { get; set; }
         public Assesment Assesment { get; set; }
     }
