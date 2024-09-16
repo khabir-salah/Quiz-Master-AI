@@ -26,8 +26,8 @@ namespace Application.Features.Command.Create.User.Register
             var newUser = new ApplicationUser
             {
                 Email = request.Email,
-                UserName = request.UserName,
-                FullName = request.FullName,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
             };
             
             var result = await _userManager.CreateAsync(newUser, request.Password);
