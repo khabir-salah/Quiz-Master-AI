@@ -14,6 +14,6 @@ namespace Application.Features.Interfaces.IRepositores
         void Delete(T item);
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetAsync(Expression<Func<T, bool>> predicate);
-
+        Task<bool> isExist(Expression<Func<T, bool>> predicate);
     }
 }
