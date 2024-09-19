@@ -15,6 +15,5 @@ namespace Application.Features.Queries.Document
     {
         public Guid AssessmentId { get; set; }              
         public string DocumentName { get; set; }
-        public int 
     }
 }
