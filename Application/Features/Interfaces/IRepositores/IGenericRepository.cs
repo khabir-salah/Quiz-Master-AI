@@ -8,6 +8,7 @@ namespace Application.Features.Interfaces.IRepositores
         Task AddAsync(T item);
         void Update(T item);
         void Delete(T item);
+        Task AddRangeAsync(IEnumerable<T> documents);
         Task SaveAsync();
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetAsync(Expression<Func<T, bool>> predicate);
