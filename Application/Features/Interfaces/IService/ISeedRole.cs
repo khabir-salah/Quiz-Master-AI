@@ -1,9 +1,5 @@
-﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.Features.DTOs;
+using Domain.Entities;
 
 namespace Application.Features.Interfaces.IService
 {
@@ -12,5 +8,7 @@ namespace Application.Features.Interfaces.IService
         Task AssignStandardRole(ApplicationUser user);
         Task AssignClassicRole(ApplicationUser user);
         Task AssignBasicRole(ApplicationUser user);
+        Task<ApplicationUser?> GetUserByEmail(string Email);
+        Task<PaystackVerifyResponse?> VerifyPaystackPayment(string reference);
     }
 }
