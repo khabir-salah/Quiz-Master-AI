@@ -15,6 +15,7 @@ namespace Domain.Entities
         public string Content { get; set; }
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
-        public ICollection<Assesment> Assesments { get; set; }
+        public DateTime Date { get; set; }
+        public Assesment Assesments { get; set; }
     }
 }
