@@ -9,7 +9,7 @@ namespace Application.Features.DTOs
 
     public class PaystackCallbackModel
     {
-        public string Event { get; set; }
+        public bool Status { get; set; }
         public PaystackDatas Data { get; set; }
     }
 
@@ -51,4 +51,29 @@ namespace Application.Features.DTOs
     {
         public string PlanType { get; set; }
     }
+
+
+    public class PaystackVerifyResponse
+    {
+        public bool Status { get; set; } 
+        public PaystackVerifyData Data { get; set; }
+    }
+
+    public class PaystackVerifyData
+    {
+        
+        public string Status { get; set; } // 'success', 'failed', etc.
+        public string Reference { get; set; }
+        public int Amount { get; set; } // Amount in kobo (or the smallest unit of currency)
+        public string GatewayResponse { get; set; }
+   
+        public PaystackMetadata Metadata { get; set; } // Custom metadata like the plan type
+        public PaystackCustomer Customer { get; set; }
+    }
+
+    public class PaystackMetadata
+    {
+        public string PlanType { get; set; } // Custom metadata field for the plan type ("classic", "standard", etc.)
+    }
+
 }
