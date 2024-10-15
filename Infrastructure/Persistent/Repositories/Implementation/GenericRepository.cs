@@ -13,6 +13,11 @@ namespace Infrastructure.Persistent.Repositories.Implementation
             await _context.AddAsync(item);
         }
 
+        public async Task AddRangeAsync(IEnumerable<T> documents)
+        {
+            await _context.AddRangeAsync(documents);
+        }
+
         public void Delete(T item)
         {
             _context.Remove(item);
@@ -37,5 +42,15 @@ namespace Infrastructure.Persistent.Repositories.Implementation
             var exist =  _context.Set<T>().Any(predicate);
             return exist == true ? true : false;
         }
+
+        public async Task SaveAsync()
+        {
+             await _context.SaveChangesAsync();
+        }
+        //public async Task<int> SaveAsync()
+        //{
+        //    var save = await _context.SaveChangesAsync();
+        //    return save;
+        //}
     }
 }

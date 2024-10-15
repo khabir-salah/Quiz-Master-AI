@@ -20,7 +20,7 @@ namespace Infrastructure.Persistent.Repositories.Implementation
         }
         public async Task<Assesment?> GetAssesmentAsync(Expression<Func<Assesment, bool>> expression)
         {
-            var assessment = _context.Assesment.Include(u => u.Question).FirstOrDefaultAsync();
+            var assessment = _context.Assesment.Include(u => u.Question).ThenInclude(O => O.Options).FirstOrDefaultAsync();
             return await assessment;
         }
     }
