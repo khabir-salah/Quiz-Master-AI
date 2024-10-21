@@ -12,4 +12,9 @@ namespace Domain.RoleConst
         public const string Classic = "Classic";
         public const string Standard = "Standard";
     }
+
+    public class Url
+    {
+        public const string Uri = "https://localhost:7063";
+    }
 }
