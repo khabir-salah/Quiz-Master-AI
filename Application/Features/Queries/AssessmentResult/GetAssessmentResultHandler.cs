@@ -3,21 +3,18 @@ using Application.Features.Interfaces.IRepositores;
 using Application.Features.Interfaces.IService;
 using Domain.Entities;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Application.Features.Queries.AssessmentResult
 {
-    public class GetAssessmentResultHandler(IGenericRepository<Question> _questionRepo, IUserService _userService) : IRequestHandler<GetAssesmentResultCommandModel, BaseResponse<AssessmentResultResponseModel>>
+    public class GetAssessmentResultHandler(IDocumentRepository _questionRepo, IUserService _userService) : IRequestHandler<GetAssesmentResultCommandModel, BaseResponse<AssessmentResultResponseModel>>
     {
         public async Task<BaseResponse<AssessmentResultResponseModel>> Handle(GetAssesmentResultCommandModel request, CancellationToken cancellationToken)
         {
             int score = 0;
-            var allQuestion = await _questionRepo.GetAllAsync();
-            var question = allQuestion.Where(Q => Q.AssesmentId == request.AssesmentId).ToList();
+            var correctAnswers = 0;
+            var allQuestion = await _questionRepo.GetAllQuestionsAsync() ?? throw new Exception("Empty List");
+            var question = allQuestion.Where(Q => Q.AssesmentId == request.AssesmentId).ToList() ?? throw new Exception("Not Found");
 
             var userAnswer = new List<QuestionResponseModel>();
 
@@ -27,6 +24,7 @@ namespace Application.Features.Queries.AssessmentResult
                 if (item.Value == currentQuestion.Answer)
                 {
                     score++;
+                    correctAnswers++;
                 }
 
                 userAnswer.Add(new QuestionResponseModel
@@ -41,10 +39,12 @@ namespace Application.Features.Queries.AssessmentResult
                     }).ToList(),
                 });
             }
+            var percentage = ((double)correctAnswers / question.Count) * 100;
+
             var loggedinUser = await _userService.GetCurrentUser();
             var result = new Result
             {
-                Score = score,
+                Score = percentage,
                 AssesmentId = request.AssesmentId,
                 ApplicationUserId = loggedinUser.Id
             };
@@ -54,8 +54,9 @@ namespace Application.Features.Queries.AssessmentResult
                 IsSuccessful = true,
                 Result = new AssessmentResultResponseModel
                 {
-                    Score = score,
-                    Questions = userAnswer
+                    Score = percentage,
+                    Questions = userAnswer,
+                    AssesmentId = request.AssesmentId,
                 }
             };
         }
