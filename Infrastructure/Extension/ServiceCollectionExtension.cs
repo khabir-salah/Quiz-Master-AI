@@ -26,7 +26,6 @@ namespace Infrastructure.Extension
                 .AddScoped<IUserService, UserService>()
                 .AddScoped<IEmailService, EmailService>()
                 .AddScoped<ITextAssessmentService, TextAssessmentService>()
-                .AddScoped<ICohereService, CohereService>()
                 .AddScoped<ISeedRole, SeedRole>();
         }
 

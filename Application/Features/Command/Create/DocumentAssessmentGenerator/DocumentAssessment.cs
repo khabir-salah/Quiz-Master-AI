@@ -18,7 +18,7 @@ namespace Application.Features.Command.Create.Assesment
     {
         public record class DocumentRequest(string Title, IFormFile Document) : IRequest<IResult>;
 
-        public class Handler(IUserService _user, IDocumentRepository _document, UserManager<ApplicationUser> _role, ICohereService _cohereService, IOptions<ConfigPath> _storageConfig) : IRequestHandler<DocumentRequest, IResult>
+        public class Handler(IUserService _user, IDocumentRepository _document, UserManager<ApplicationUser> _role, IOptions<ConfigPath> _storageConfig) : IRequestHandler<DocumentRequest, IResult>
         {
             public async Task<IResult> Handle(DocumentRequest request, CancellationToken cancellationToken)
             {

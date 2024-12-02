@@ -4,6 +4,7 @@ using Infrastructure.Persistent.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(QuizMasterAiDb))]
-    partial class QuizMasterAiDbModelSnapshot : ModelSnapshot
+    [Migration("20240912062448_entities")]
+    partial class entities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -41,14 +44,7 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("LastName")
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -74,12 +70,6 @@ namespace Infrastructure.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
@@ -135,8 +125,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("DocumentId")
-                        .IsUnique();
+                    b.HasIndex("DocumentId");
 
                     b.ToTable("Assesment");
                 });
@@ -150,9 +139,6 @@ namespace Infrastructure.Migrations
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<int>("DocumentType")
                         .HasColumnType("int");
@@ -226,21 +212,23 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("ApplicationUserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
                     b.Property<Guid>("AssesmentId")
                         .HasColumnType("char(36)");
 
                     b.Property<double>("Score")
                         .HasColumnType("double");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("UserId1")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ApplicationUserId");
-
                     b.HasIndex("AssesmentId");
+
+                    b.HasIndex("UserId1");
 
                     b.ToTable("Result");
                 });
@@ -409,8 +397,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Document", "Document")
-                        .WithOne("Assesments")
-                        .HasForeignKey("Domain.Entities.Assesment", "DocumentId")
+                        .WithMany("Assesments")
+                        .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -452,17 +440,15 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Result", b =>
                 {
-                    b.HasOne("Domain.Entities.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Domain.Entities.Assesment", "Assesment")
                         .WithMany("Results")
                         .HasForeignKey("AssesmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("Domain.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId1");
 
                     b.Navigation("Assesment");
 
@@ -540,8 +526,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Document", b =>
                 {
-                    b.Navigation("Assesments")
-                        .IsRequired();
+                    b.Navigation("Assesments");
                 });
 
             modelBuilder.Entity("Domain.Entities.Question", b =>

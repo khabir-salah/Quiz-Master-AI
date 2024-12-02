@@ -3,9 +3,13 @@ using Application.Features.DTOs;
 using Application.Features.Interfaces.IService;
 using Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Api.Controllers
 {
@@ -26,13 +30,39 @@ namespace Api.Controllers
             return BadRequest();
         }
 
+        [HttpPost("Google-sign")]
+        public async Task<IActionResult> GoogleAuth()
+        {
+            var properties = new AuthenticationProperties { RedirectUri = Url.Action("GoogleResponse") };
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginRequestModel request)
         {
+            
             var user = await _userService.LoginAsync(request);
             if(!user.IsSuccessful) return BadRequest(user.Message);
             return Ok(user.Result);
         }
+
+
+        [HttpGet("google-response")]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            if (result?.Principal != null)
+            {
+                // You can access user info here
+                var claims = result.Principal.Identities.FirstOrDefault().Claims;
+                var userName = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+                // Continue with your logic (e.g., create session or save user to DB)
+            }
+
+            return Ok();
+        }
+
 
         [HttpGet("LogOut")]
         public async Task<IActionResult> Logout()

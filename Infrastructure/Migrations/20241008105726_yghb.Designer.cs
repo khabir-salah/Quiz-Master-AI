@@ -4,6 +4,7 @@ using Infrastructure.Persistent.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(QuizMasterAiDb))]
-    partial class QuizMasterAiDbModelSnapshot : ModelSnapshot
+    [Migration("20241008105726_yghb")]
+    partial class yghb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -135,8 +138,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("DocumentId")
-                        .IsUnique();
+                    b.HasIndex("DocumentId");
 
                     b.ToTable("Assesment");
                 });
@@ -409,8 +411,8 @@ namespace Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Document", "Document")
-                        .WithOne("Assesments")
-                        .HasForeignKey("Domain.Entities.Assesment", "DocumentId")
+                        .WithMany("Assesments")
+                        .HasForeignKey("DocumentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -540,8 +542,7 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Document", b =>
                 {
-                    b.Navigation("Assesments")
-                        .IsRequired();
+                    b.Navigation("Assesments");
                 });
 
             modelBuilder.Entity("Domain.Entities.Question", b =>
