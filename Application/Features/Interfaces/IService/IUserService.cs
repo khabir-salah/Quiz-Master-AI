@@ -15,5 +15,6 @@ namespace Application.Features.Interfaces.IService
         Task<BaseResponse<string>> ForgotPasswordAsync(ForgotPasswordRequest request, string origin);
         Task<BaseResponse<string>> ResetPasswordAsync(ResetPasswordRequest request);
         Task<IEnumerable<Claim>> GetClaimsAsync(ApplicationUser user);
+        Task<string> GenerateJwtAsync(ApplicationUser user);
     }
 }

@@ -1,15 +1,16 @@
 ﻿using Application.Features.DTOs;
 using Application.Features.Interfaces.IService;
 using Domain.Enum;
+using Microsoft.Extensions.Configuration;
 using OpenAI_API;
 using OpenAI_API.Completions;
 
 
 namespace Application.Features.Queries.Services.Implementation
 {
-    public class TextGenerator : ITextGenerator
+    public class TextGenerator(IConfiguration _configuration) : ITextGenerator
     {
-        private readonly string apiKey = "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";
+        string? apiKey = _configuration["ApiKey:api1"];
         private readonly OpenAIAPI api;
         public async Task<BaseResponse<string>> GenerateTextAssessmnet(TextGeneratorRequestModel request)
         {

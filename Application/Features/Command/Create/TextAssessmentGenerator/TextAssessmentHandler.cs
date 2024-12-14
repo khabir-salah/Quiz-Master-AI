@@ -52,19 +52,19 @@ namespace Application.Features.Command.Create.Assesment
                 }
             }
 
-            //var model = new TextGeneratorRequestModel
-            //{
-            //    Content = request.Content,
-            //    NumberOfQuestion = request.Choice.NumberOfQuestion,
-            //    Type = request.Choice.Type,
-            //};
+            var model = new TextGeneratorRequestModel
+            {
+                Content = request.Content,
+                NumberOfQuestion = request.Choice.NumberOfQuestion,
+                Type = request.Choice.Type,
+            };
 
 
-            //var generateAssessment = await _generator.GenerateTextAssessmnet(model);
-            //if (!generateAssessment.IsSuccessful)
-            //{
-            //    return new BaseResponse<AssessmentResponse> { IsSuccessful = false, Message = "An Error Occured" };
-            //}
+            var generateAssessment = await _generator.GenerateTextAssessmnet(model);
+            if (!generateAssessment.IsSuccessful)
+            {
+                return new BaseResponse<AssessmentResponse> { IsSuccessful = false, Message = "An Error Occured" };
+            }
 
             var document = new Document
             {

@@ -50,7 +50,7 @@ namespace Application.Features.Queries.Services.Implementation
             }
 
             user.RefreshToken = GenerateRefreshToken();
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+            user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
 
             var token = await GenerateJwtAsync(user);
@@ -67,7 +67,7 @@ namespace Application.Features.Queries.Services.Implementation
         }
 
 
-        private async Task<string> GenerateJwtAsync(ApplicationUser user)
+        public async Task<string> GenerateJwtAsync(ApplicationUser user)
         {
             var token = GenerateEncryptedToken(GetSigningCredentials(), await GetClaimsAsync(user));
             return token;

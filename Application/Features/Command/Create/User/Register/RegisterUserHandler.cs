@@ -37,7 +37,7 @@ namespace Application.Features.Command.Create.User.Register
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 UserName = request.FirstName
-            };
+            }; 
             
             var result = await _userManager.CreateAsync(newUser, request.Password);
             if(result.Succeeded)

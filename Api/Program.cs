@@ -6,12 +6,13 @@ using Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Application.Features.Queries.Services.Implementation;
 using Hangfire;
-using Hangfire.MySql;
 using Application.Features.DTOs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
+using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace Api
 {
@@ -25,7 +26,7 @@ namespace Api
             builder.Services.AddControllers();
 
             builder.Services.AddDbContext<QuizMasterAiDb>(opt =>
-            opt.UseMySql(connection, ServerVersion.AutoDetect(connection)));
+            opt.UseNpgsql(connection));
             builder.Services.AddMediatRs();
             
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -39,10 +40,10 @@ namespace Api
             builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
             builder.Services.AddHangfire(config =>
             {
-                config.UseStorage(new MySqlStorage(connection, new MySqlStorageOptions
+                config.UseStorage(new PostgreSqlStorage(connection, new PostgreSqlStorageOptions
                 {
-                    //TablePrefix = "Hangfire",  
-                    QueuePollInterval = TimeSpan.FromSeconds(10) 
+                    // You can set options here if needed
+                    QueuePollInterval = TimeSpan.FromSeconds(10)
                 }));
             });
             builder.Services.AddHangfireServer();
@@ -51,16 +52,12 @@ namespace Api
 
             var configuration = builder.Configuration;
 
-            builder.Services.AddAuthentication().AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = configuration["Google:ClientId"];
-                googleOptions.ClientSecret = configuration["Google:ClientSecret"];
-            });
+           
 
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
             })
             .AddJwtBearer(o =>
             {
@@ -78,6 +75,13 @@ namespace Api
                     ValidAudience = builder.Configuration["JWT:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
                 };
+            })
+            .AddGoogle(googleOptions => 
+            {
+                googleOptions.ClientId = configuration["Google:ClientId"] ?? throw new NullReferenceException();
+                googleOptions.ClientSecret = configuration["Google:ClientSecret"] ?? throw new NullReferenceException();
+                googleOptions.CallbackPath = "/google-response"; // Match to Google Console
+                //googleOptions.SignInScheme = JwtBearerDefaults.AuthenticationScheme; //JWT instead of cookies
             });
 
 
@@ -120,9 +124,10 @@ namespace Api
                 options.AddPolicy("AllowAll",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                        builder.WithOrigins("https://localhost:7164")
                                .AllowAnyMethod()
-                               .AllowAnyHeader();
+                               .AllowAnyHeader()
+                               .AllowCredentials();
                     });
             });
 
