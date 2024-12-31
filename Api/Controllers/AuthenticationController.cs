@@ -5,6 +5,7 @@ using Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -111,6 +112,71 @@ namespace Api.Controllers
             }
 
             return Redirect($"https://localhost:7164/google-response?token=");
+        }
+
+
+        [HttpGet("facebook")]
+        public IActionResult Facebook()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("FacebookResponce")
+            };
+            return Challenge(properties, FacebookDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("signin-facebook")]
+        public IActionResult FacebookLogin()
+        {
+            var redirectUri = Url.Action("FacebookResponce", "Account", null, Request.Scheme);
+            var properties = new AuthenticationProperties { RedirectUri = redirectUri };
+            return Challenge(properties, "Facebook");
+        }
+
+
+        [HttpGet("Facebook-responce")]
+        public async Task<IActionResult> FacebookCallback()
+        {
+            var result = await HttpContext.AuthenticateAsync();
+            if (!result.Succeeded || result.Principal == null)
+            {
+                return Unauthorized("Facebook login failed.");
+            }
+
+            // Extract user information from claims
+            var claims = result.Principal.Identities.FirstOrDefault()?.Claims;
+            var email = result.Principal.FindFirstValue(ClaimTypes.Email);
+            var name = result.Principal.FindFirstValue(ClaimTypes.Name);
+            var userId = claims?.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            var user = new ApplicationUser();
+
+            var checkUser = await _signInManager.UserManager.FindByEmailAsync(email);
+            if (checkUser == null)
+            {
+
+                string[] nameParts = name.Split(' ');
+                var newUser = new ApplicationUser
+                {
+                    Email = email,
+                    FirstName = nameParts[0],
+                    LastName = nameParts[1],
+                    UserName = nameParts[1],
+                    // Provider = "Facebook"
+                };
+                var register = await _signInManager.UserManager.CreateAsync(newUser, userId);
+                if (register.Succeeded)
+                {
+                    await _role.AssignBasicRole(newUser);
+                    newUser.IsActive = true;
+                    newUser.EmailConfirmed = true;
+                    var d = await _signInManager.UserManager.UpdateAsync(newUser);
+                }
+                var newtoken = await _userService.GenerateJwtAsync(newUser);
+                return Redirect($"https://localhost:7164/facebook-response?token={newtoken}");
+
+            }
+            var token = await _userService.GenerateJwtAsync(checkUser);
+            return Redirect($"https://localhost:7164/facebook-response?token={token}");
         }
 
 

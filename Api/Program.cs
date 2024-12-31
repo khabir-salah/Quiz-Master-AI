@@ -76,14 +76,22 @@ namespace Api
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"]))
                 };
             })
-            .AddGoogle(googleOptions => 
+            .AddGoogle(googleOptions =>
             {
                 googleOptions.ClientId = configuration["Google:ClientId"] ?? throw new NullReferenceException();
                 googleOptions.ClientSecret = configuration["Google:ClientSecret"] ?? throw new NullReferenceException();
                 googleOptions.CallbackPath = "/google-response"; // Match to Google Console
-                //googleOptions.SignInScheme = JwtBearerDefaults.AuthenticationScheme; //JWT instead of cookies
-            });
-
+                                                                 //googleOptions.SignInScheme = JwtBearerDefaults.AuthenticationScheme; //JWT instead of cookies
+            }).AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = builder.Configuration["Facebook:AppId"];
+                facebookOptions.AppSecret = builder.Configuration["Facebook:AppSecret"];
+                facebookOptions.Events.OnCreatingTicket = async context =>
+                {
+                    // Fetch additional user details from Facebook if needed
+                };
+            }
+        );
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -154,7 +162,6 @@ namespace Api
             
 
             app.UseHangfireDashboard();
-
             app.UseHangfireServer();
             app.MapControllers();
 
